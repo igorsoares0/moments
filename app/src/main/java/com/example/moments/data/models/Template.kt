@@ -6,7 +6,8 @@ data class Template(
     val thumbnailResId: Int,
     val momentsCount: Int,
     val durationSeconds: Int,
-    val category: TemplateCategory
+    val category: TemplateCategory,
+    val momentDurations: List<Float> = listOf()
 )
 
 enum class TemplateCategory {

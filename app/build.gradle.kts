@@ -55,6 +55,12 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
 
+    // Coil for image loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Accompanist for permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

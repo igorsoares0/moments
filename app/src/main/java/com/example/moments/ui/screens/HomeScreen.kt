@@ -42,20 +42,44 @@ fun HomeScreen(
 ) {
     // Mock data for templates
     val featureTemplates = listOf(
-        Template(1, "Feature 1", R.drawable.template_1, 7, 72, TemplateCategory.FEATURE),
-        Template(2, "Feature 2", R.drawable.template_2, 7, 72, TemplateCategory.FEATURE)
+        Template(
+            1, "Feature 1", R.drawable.template_1, 7, 72, TemplateCategory.FEATURE,
+            momentDurations = listOf(1.6f, 2.4f, 2.8f, 1.8f, 1.2f, 3.2f, 2.2f)
+        ),
+        Template(
+            2, "Feature 2", R.drawable.template_2, 7, 72, TemplateCategory.FEATURE,
+            momentDurations = listOf(2.0f, 3.0f, 1.5f, 2.5f, 1.8f, 2.2f, 1.5f)
+        )
     )
 
     val newTemplates = listOf(
-        Template(3, "New 1", R.drawable.template_3, 7, 72, TemplateCategory.NEW),
-        Template(4, "New 2", R.drawable.template_1, 7, 72, TemplateCategory.NEW),
-        Template(5, "New 3", R.drawable.template_2, 7, 72, TemplateCategory.NEW)
+        Template(
+            3, "New 1", R.drawable.template_3, 7, 72, TemplateCategory.NEW,
+            momentDurations = listOf(1.6f, 2.4f, 2.8f, 1.8f, 1.2f, 3.2f, 2.2f)
+        ),
+        Template(
+            4, "New 2", R.drawable.template_1, 7, 72, TemplateCategory.NEW,
+            momentDurations = listOf(2.0f, 3.0f, 1.5f, 2.5f, 1.8f, 2.2f, 1.5f)
+        ),
+        Template(
+            5, "New 3", R.drawable.template_2, 7, 72, TemplateCategory.NEW,
+            momentDurations = listOf(1.8f, 2.2f, 2.0f, 2.5f, 1.5f, 2.8f, 2.0f)
+        )
     )
 
     val mostViewedTemplates = listOf(
-        Template(6, "Most Viewed 1", R.drawable.template_3, 7, 72, TemplateCategory.MOST_VIEWED),
-        Template(7, "Most Viewed 2", R.drawable.template_1, 7, 72, TemplateCategory.MOST_VIEWED),
-        Template(8, "Most Viewed 3", R.drawable.template_2, 7, 72, TemplateCategory.MOST_VIEWED)
+        Template(
+            6, "Most Viewed 1", R.drawable.template_3, 7, 72, TemplateCategory.MOST_VIEWED,
+            momentDurations = listOf(1.6f, 2.4f, 2.8f, 1.8f, 1.2f, 3.2f, 2.2f)
+        ),
+        Template(
+            7, "Most Viewed 2", R.drawable.template_1, 7, 72, TemplateCategory.MOST_VIEWED,
+            momentDurations = listOf(2.0f, 3.0f, 1.5f, 2.5f, 1.8f, 2.2f, 1.5f)
+        ),
+        Template(
+            8, "Most Viewed 3", R.drawable.template_2, 7, 72, TemplateCategory.MOST_VIEWED,
+            momentDurations = listOf(1.8f, 2.2f, 2.0f, 2.5f, 1.5f, 2.8f, 2.0f)
+        )
     )
 
     Scaffold(
