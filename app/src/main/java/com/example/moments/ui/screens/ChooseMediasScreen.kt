@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -178,27 +180,28 @@ fun ChooseMediasScreen(
                             },
                             enabled = selectedCount > 0,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF7C3AED),
-                                disabledContainerColor = Color(0xFF4A4A4A)
+                                containerColor = Color(0xFF8B5CF6),
+                                disabledContainerColor = Color(0xFF8B5CF6).copy(alpha = 0.3f)
                             ),
                             shape = CircleShape,
-                            modifier = Modifier.size(56.dp),
+                            modifier = Modifier.size(50.dp),
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowForward,
                                 contentDescription = "Continue",
                                 tint = Color.White,
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(26.dp)
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Duration boxes row
+                    // Duration boxes row with horizontal scroll
                     if (template.momentDurations.isNotEmpty()) {
                         Row(
+                            modifier = Modifier.horizontalScroll(rememberScrollState()),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             template.momentDurations.forEach { duration ->
