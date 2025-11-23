@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.moments.R
 import com.example.moments.data.models.Template
 import com.example.moments.data.models.TemplateCategory
 import com.example.moments.ui.components.BottomNavBar
@@ -39,20 +40,20 @@ import com.example.moments.ui.components.TemplateCard
 fun HomeScreen() {
     // Mock data for templates
     val featureTemplates = listOf(
-        Template(1, "Feature 1", "", 7, 72, TemplateCategory.FEATURE),
-        Template(2, "Feature 2", "", 7, 72, TemplateCategory.FEATURE)
+        Template(1, "Feature 1", R.drawable.template_1, 7, 72, TemplateCategory.FEATURE),
+        Template(2, "Feature 2", R.drawable.template_2, 7, 72, TemplateCategory.FEATURE)
     )
 
     val newTemplates = listOf(
-        Template(3, "New 1", "", 7, 72, TemplateCategory.NEW),
-        Template(4, "New 2", "", 7, 72, TemplateCategory.NEW),
-        Template(5, "New 3", "", 7, 72, TemplateCategory.NEW)
+        Template(3, "New 1", R.drawable.template_3, 7, 72, TemplateCategory.NEW),
+        Template(4, "New 2", R.drawable.template_1, 7, 72, TemplateCategory.NEW),
+        Template(5, "New 3", R.drawable.template_2, 7, 72, TemplateCategory.NEW)
     )
 
     val mostViewedTemplates = listOf(
-        Template(6, "Most Viewed 1", "", 7, 72, TemplateCategory.MOST_VIEWED),
-        Template(7, "Most Viewed 2", "", 7, 72, TemplateCategory.MOST_VIEWED),
-        Template(8, "Most Viewed 3", "", 7, 72, TemplateCategory.MOST_VIEWED)
+        Template(6, "Most Viewed 1", R.drawable.template_3, 7, 72, TemplateCategory.MOST_VIEWED),
+        Template(7, "Most Viewed 2", R.drawable.template_1, 7, 72, TemplateCategory.MOST_VIEWED),
+        Template(8, "Most Viewed 3", R.drawable.template_2, 7, 72, TemplateCategory.MOST_VIEWED)
     )
 
     Scaffold(

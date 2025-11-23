@@ -3,7 +3,7 @@ package com.example.moments.data.models
 data class Template(
     val id: Int,
     val title: String,
-    val thumbnailUrl: String,
+    val thumbnailResId: Int,
     val momentsCount: Int,
     val durationSeconds: Int,
     val category: TemplateCategory

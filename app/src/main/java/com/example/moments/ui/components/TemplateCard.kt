@@ -48,11 +48,12 @@ fun TemplateCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Placeholder for image (will be replaced with actual images later)
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF3A3A3A))
+            // Template image
+            Image(
+                painter = painterResource(id = template.thumbnailResId),
+                contentDescription = template.title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
 
             // Gradient overlay at bottom
