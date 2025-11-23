@@ -37,7 +37,9 @@ import com.example.moments.ui.components.BottomNavBar
 import com.example.moments.ui.components.TemplateCard
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onTemplateClick: (Template) -> Unit = {}
+) {
     // Mock data for templates
     val featureTemplates = listOf(
         Template(1, "Feature 1", R.drawable.template_1, 7, 72, TemplateCategory.FEATURE),
@@ -130,7 +132,10 @@ fun HomeScreen() {
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(featureTemplates) { template ->
-                            TemplateCard(template = template)
+                            TemplateCard(
+                                template = template,
+                                onClick = { onTemplateClick(template) }
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
@@ -152,7 +157,10 @@ fun HomeScreen() {
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(newTemplates) { template ->
-                            TemplateCard(template = template)
+                            TemplateCard(
+                                template = template,
+                                onClick = { onTemplateClick(template) }
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
@@ -174,7 +182,10 @@ fun HomeScreen() {
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(mostViewedTemplates) { template ->
-                            TemplateCard(template = template)
+                            TemplateCard(
+                                template = template,
+                                onClick = { onTemplateClick(template) }
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(24.dp))
