@@ -46,11 +46,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.moments.data.models.MediaItem
 import com.example.moments.data.models.Template
 import com.example.moments.ui.components.MediaGridItem
@@ -67,6 +70,7 @@ fun ChooseMediasScreen(
     val context = LocalContext.current
     val mediaItems = remember { mutableStateListOf<MediaItem>() }
     var selectedCount by remember { mutableStateOf(0) }
+    val selectedMediasInOrder = remember { mutableStateListOf<MediaItem>() }
 
     val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         listOf(
@@ -140,8 +144,18 @@ fun ChooseMediasScreen(
                         onClick = {
                             val index = mediaItems.indexOf(item)
                             if (index != -1) {
-                                mediaItems[index] = item.copy(isSelected = !item.isSelected)
-                                selectedCount = mediaItems.count { it.isSelected }
+                                if (item.isSelected) {
+                                    // Deselect
+                                    mediaItems[index] = item.copy(isSelected = false)
+                                    selectedMediasInOrder.remove(item)
+                                } else {
+                                    // Select only if we haven't reached the limit
+                                    if (selectedMediasInOrder.size < template.momentsCount) {
+                                        mediaItems[index] = item.copy(isSelected = true)
+                                        selectedMediasInOrder.add(item)
+                                    }
+                                }
+                                selectedCount = selectedMediasInOrder.size
                             }
                         }
                     )
@@ -175,8 +189,7 @@ fun ChooseMediasScreen(
                         // Continue button
                         Button(
                             onClick = {
-                                val selectedItems = mediaItems.filter { it.isSelected }
-                                onContinue(selectedItems)
+                                onContinue(selectedMediasInOrder.toList())
                             },
                             enabled = selectedCount > 0,
                             colors = ButtonDefaults.buttonColors(
@@ -204,23 +217,45 @@ fun ChooseMediasScreen(
                             modifier = Modifier.horizontalScroll(rememberScrollState()),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            template.momentDurations.forEach { duration ->
+                            template.momentDurations.forEachIndexed { index, duration ->
                                 Box(
                                     modifier = Modifier
                                         .size(width = 64.dp, height = 100.dp)
                                         .background(
                                             color = Color(0xFF1C1C1C),
                                             shape = RoundedCornerShape(8.dp)
-                                        ),
-                                    contentAlignment = Alignment.BottomCenter
+                                        )
+                                        .clip(RoundedCornerShape(8.dp))
                                 ) {
-                                    Text(
-                                        text = "${duration}s",
-                                        color = Color.White,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        modifier = Modifier.padding(bottom = 12.dp)
-                                    )
+                                    // Display selected media if available
+                                    if (index < selectedMediasInOrder.size) {
+                                        AsyncImage(
+                                            model = selectedMediasInOrder[index].uri,
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+
+                                    // Duration text overlay
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                color = if (index < selectedMediasInOrder.size)
+                                                    Color.Black.copy(alpha = 0.4f)
+                                                else Color.Transparent
+                                            ),
+                                        contentAlignment = Alignment.BottomCenter
+                                    ) {
+                                        Text(
+                                            text = "${duration}s",
+                                            color = Color.White,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            modifier = Modifier.padding(bottom = 12.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
