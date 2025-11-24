@@ -43,11 +43,11 @@ fun HomeScreen(
     // Mock data for templates
     val featureTemplates = listOf(
         Template(
-            1, "Feature 1", R.drawable.template_1, 7, 72, TemplateCategory.FEATURE,
+            1, "Feature 1", R.drawable.template_1, 7, 15, TemplateCategory.FEATURE,
             momentDurations = listOf(1.6f, 2.4f, 2.8f, 1.8f, 1.2f, 3.2f, 2.2f)
         ),
         Template(
-            2, "Feature 2", R.drawable.template_2, 7, 72, TemplateCategory.FEATURE,
+            2, "Feature 2", R.drawable.template_2, 7, 16, TemplateCategory.FEATURE,
             momentDurations = listOf(2.0f, 3.0f, 1.5f, 2.5f, 1.8f, 2.2f, 1.5f)
         )
     )

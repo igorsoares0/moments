@@ -59,8 +59,16 @@ import com.example.moments.data.models.Template
 import com.example.moments.ui.components.MediaGridItem
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.util.UnstableApi
+import com.example.moments.viewmodel.VideoCompositionViewModel
+import com.example.moments.data.video.VideoComposer
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, UnstableApi::class)
 @Composable
 fun ChooseMediasScreen(
     template: Template,
@@ -71,6 +79,9 @@ fun ChooseMediasScreen(
     val mediaItems = remember { mutableStateListOf<MediaItem>() }
     var selectedCount by remember { mutableStateOf(0) }
     val selectedMediasInOrder = remember { mutableStateListOf<MediaItem>() }
+
+    val viewModel: VideoCompositionViewModel = viewModel()
+    val compositionState by viewModel.compositionState.collectAsState()
 
     val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         listOf(
@@ -189,9 +200,15 @@ fun ChooseMediasScreen(
                         // Continue button
                         Button(
                             onClick = {
-                                onContinue(selectedMediasInOrder.toList())
+                                if (selectedCount == template.momentsCount) {
+                                    viewModel.createVideo(
+                                        context = context,
+                                        mediaItems = selectedMediasInOrder.toList(),
+                                        durations = template.momentDurations
+                                    )
+                                }
                             },
-                            enabled = selectedCount > 0,
+                            enabled = selectedCount == template.momentsCount,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF8B5CF6),
                                 disabledContainerColor = Color(0xFF8B5CF6).copy(alpha = 0.3f)
@@ -262,6 +279,65 @@ fun ChooseMediasScreen(
                     }
                 }
             }
+        }
+
+        // Progress/Success/Error Dialogs
+        when (val state = compositionState) {
+            is VideoComposer.CompositionState.Progress -> {
+                AlertDialog(
+                    onDismissRequest = { },
+                    title = { Text("Creating video", color = Color.White) },
+                    text = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(
+                                color = Color(0xFF8B5CF6),
+                                modifier = Modifier.padding(16.dp)
+                            )
+                            Text(
+                                text = "${state.percentage}%",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    },
+                    confirmButton = { },
+                    containerColor = Color(0xFF1A1A1A)
+                )
+            }
+            is VideoComposer.CompositionState.Success -> {
+                AlertDialog(
+                    onDismissRequest = {
+                        viewModel.resetState()
+                        onClose()
+                    },
+                    title = { Text("Success!", color = Color.White) },
+                    text = { Text("Video created and saved to gallery!", color = Color.White) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            viewModel.resetState()
+                            onClose()
+                        }) {
+                            Text("OK", color = Color(0xFF8B5CF6))
+                        }
+                    },
+                    containerColor = Color(0xFF1A1A1A)
+                )
+            }
+            is VideoComposer.CompositionState.Error -> {
+                AlertDialog(
+                    onDismissRequest = { viewModel.resetState() },
+                    title = { Text("Error", color = Color.White) },
+                    text = { Text(state.message, color = Color.White) },
+                    confirmButton = {
+                        TextButton(onClick = { viewModel.resetState() }) {
+                            Text("OK", color = Color(0xFF8B5CF6))
+                        }
+                    },
+                    containerColor = Color(0xFF1A1A1A)
+                )
+            }
+            else -> { }
         }
     }
 }

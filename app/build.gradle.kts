@@ -51,15 +51,22 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // ExoPlayer for video playback
-    implementation("androidx.media3:media3-exoplayer:1.2.0")
-    implementation("androidx.media3:media3-ui:1.2.0")
+    // Media3 for video playback and composition
+    implementation("androidx.media3:media3-exoplayer:1.5.0")
+    implementation("androidx.media3:media3-ui:1.5.0")
+    implementation("androidx.media3:media3-transformer:1.5.0")
+    implementation("androidx.media3:media3-effect:1.5.0")
+    implementation("androidx.media3:media3-common:1.5.0")
+    implementation("androidx.media3:media3-muxer:1.5.0")
 
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Accompanist for permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // Lifecycle ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
