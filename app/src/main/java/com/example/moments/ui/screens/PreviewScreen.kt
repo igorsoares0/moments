@@ -27,11 +27,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -57,8 +59,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 import com.example.moments.data.models.Template
+import com.example.moments.data.video.VideoComposer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import android.content.Intent
 
 @UnstableApi
 @Composable
@@ -73,6 +77,8 @@ fun PreviewScreen(
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableFloatStateOf(0f) }
     var duration by remember { mutableFloatStateOf(0f) }
+    var showOptionsDialog by remember { mutableStateOf(false) }
+    var showSaveSuccessDialog by remember { mutableStateOf(false) }
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -129,7 +135,7 @@ fun PreviewScreen(
                     )
                 }
 
-                IconButton(onClick = onShare) {
+                IconButton(onClick = { showOptionsDialog = true }) {
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = "Share",
@@ -281,6 +287,66 @@ fun PreviewScreen(
                     }
                 }
             }
+        }
+
+        // Options Dialog
+        if (showOptionsDialog) {
+            AlertDialog(
+                onDismissRequest = { showOptionsDialog = false },
+                title = { Text("Choose action", color = Color.White) },
+                text = {
+                    Column {
+                        Text(
+                            text = "What would you like to do with this video?",
+                            color = Color.White.copy(alpha = 0.7f)
+                        )
+                    }
+                },
+                confirmButton = {
+                    Column {
+                        TextButton(
+                            onClick = {
+                                showOptionsDialog = false
+                                onShare()
+                            }
+                        ) {
+                            Text("Share", color = Color(0xFF8B5CF6))
+                        }
+                        TextButton(
+                            onClick = {
+                                showOptionsDialog = false
+                                val savedUri = VideoComposer.saveVideoToGallery(context, videoUri)
+                                if (savedUri != null) {
+                                    showSaveSuccessDialog = true
+                                }
+                            }
+                        ) {
+                            Text("Save to Gallery", color = Color(0xFF8B5CF6))
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showOptionsDialog = false }) {
+                        Text("Cancel", color = Color.White.copy(alpha = 0.6f))
+                    }
+                },
+                containerColor = Color(0xFF1A1A1A)
+            )
+        }
+
+        // Save Success Dialog
+        if (showSaveSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { showSaveSuccessDialog = false },
+                title = { Text("Success!", color = Color.White) },
+                text = { Text("Video saved to gallery successfully!", color = Color.White) },
+                confirmButton = {
+                    TextButton(onClick = { showSaveSuccessDialog = false }) {
+                        Text("OK", color = Color(0xFF8B5CF6))
+                    }
+                },
+                containerColor = Color(0xFF1A1A1A)
+            )
         }
     }
 }

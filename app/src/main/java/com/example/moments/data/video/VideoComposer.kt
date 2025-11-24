@@ -33,6 +33,63 @@ class VideoComposer(private val context: Context) {
         data class Error(val message: String) : CompositionState()
     }
 
+    companion object {
+        /**
+         * Salva um vídeo da URI (arquivo em cache) para a galeria do dispositivo
+         */
+        fun saveVideoToGallery(context: Context, videoUri: Uri): Uri? {
+            try {
+                // Obtém o arquivo do URI
+                val videoFile = if (videoUri.scheme == "file") {
+                    File(videoUri.path!!)
+                } else {
+                    return null
+                }
+
+                if (!videoFile.exists()) {
+                    return null
+                }
+
+                val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val fileName = "MOMENTS_$timestamp.mp4"
+
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Video.Media.DISPLAY_NAME, fileName)
+                    put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(MediaStore.Video.Media.RELATIVE_PATH,
+                            Environment.DIRECTORY_MOVIES + "/Moments")
+                        put(MediaStore.Video.Media.IS_PENDING, 1)
+                    }
+                }
+
+                val resolver = context.contentResolver
+                val uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+                uri?.let {
+                    resolver.openOutputStream(it)?.use { output ->
+                        videoFile.inputStream().use { input ->
+                            input.copyTo(output)
+                        }
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        contentValues.clear()
+                        contentValues.put(MediaStore.Video.Media.IS_PENDING, 0)
+                        resolver.update(it, contentValues, null, null)
+                    }
+
+                    return it
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            return null
+        }
+    }
+
     fun composeVideo(
         mediaItems: List<com.example.moments.data.models.MediaItem>,
         durations: List<Float>
@@ -50,7 +107,8 @@ class VideoComposer(private val context: Context) {
                 .addListener(object : Transformer.Listener {
                     override fun onCompleted(composition: Composition, exportResult: ExportResult) {
                         completed = true
-                        resultUri = saveToGallery(outputFile)
+                        // Retorna URI do arquivo em cache (não salva na galeria ainda)
+                        resultUri = Uri.fromFile(outputFile)
                     }
 
                     override fun onError(
@@ -138,52 +196,5 @@ class VideoComposer(private val context: Context) {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val fileName = "MOMENTS_$timestamp.mp4"
         return File(context.cacheDir, fileName)
-    }
-
-    private fun saveToGallery(videoFile: File): Uri? {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val fileName = "MOMENTS_$timestamp.mp4"
-
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Video.Media.DISPLAY_NAME, fileName)
-            put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+: Salva em Movies/Moments
-                put(MediaStore.Video.Media.RELATIVE_PATH,
-                    Environment.DIRECTORY_MOVIES + "/Moments")
-                put(MediaStore.Video.Media.IS_PENDING, 1)
-            }
-        }
-
-        val resolver = context.contentResolver
-        val uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-        uri?.let {
-            try {
-                resolver.openOutputStream(it)?.use { output ->
-                    videoFile.inputStream().use { input ->
-                        input.copyTo(output)
-                    }
-                }
-
-                // Marca como completo (aparece na galeria)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    contentValues.clear()
-                    contentValues.put(MediaStore.Video.Media.IS_PENDING, 0)
-                    resolver.update(it, contentValues, null, null)
-                }
-
-                // Remove arquivo temporário
-                videoFile.delete()
-
-                return it
-            } catch (e: Exception) {
-                e.printStackTrace()
-                resolver.delete(it, null, null)
-            }
-        }
-
-        return null
     }
 }
