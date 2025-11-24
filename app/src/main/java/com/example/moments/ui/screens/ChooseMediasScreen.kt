@@ -73,7 +73,8 @@ import androidx.compose.material3.TextButton
 fun ChooseMediasScreen(
     template: Template,
     onClose: () -> Unit = {},
-    onContinue: (List<MediaItem>) -> Unit = {}
+    onContinue: (List<MediaItem>) -> Unit = {},
+    onVideoCreated: (Uri) -> Unit = {}
 ) {
     val context = LocalContext.current
     val mediaItems = remember { mutableStateListOf<MediaItem>() }
@@ -306,23 +307,10 @@ fun ChooseMediasScreen(
                 )
             }
             is VideoComposer.CompositionState.Success -> {
-                AlertDialog(
-                    onDismissRequest = {
-                        viewModel.resetState()
-                        onClose()
-                    },
-                    title = { Text("Success!", color = Color.White) },
-                    text = { Text("Video created and saved to gallery!", color = Color.White) },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            viewModel.resetState()
-                            onClose()
-                        }) {
-                            Text("OK", color = Color(0xFF8B5CF6))
-                        }
-                    },
-                    containerColor = Color(0xFF1A1A1A)
-                )
+                LaunchedEffect(Unit) {
+                    viewModel.resetState()
+                    onVideoCreated(state.uri)
+                }
             }
             is VideoComposer.CompositionState.Error -> {
                 AlertDialog(
