@@ -60,9 +60,11 @@ import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 import com.example.moments.data.models.Template
 import com.example.moments.data.video.VideoComposer
+import com.example.moments.viewmodel.ProjectsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import android.content.Intent
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @UnstableApi
 @Composable
@@ -70,15 +72,24 @@ fun PreviewScreen(
     videoUri: Uri,
     template: Template,
     selectedMedias: List<com.example.moments.data.models.MediaItem>,
+    isNewProject: Boolean = false,
     onClose: () -> Unit = {},
     onShare: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val projectsViewModel: ProjectsViewModel = viewModel()
     var isPlaying by remember { mutableStateOf(false) }
     var currentPosition by remember { mutableFloatStateOf(0f) }
     var duration by remember { mutableFloatStateOf(0f) }
     var showOptionsDialog by remember { mutableStateOf(false) }
     var showSaveSuccessDialog by remember { mutableStateOf(false) }
+
+    // Salvar projeto automaticamente apenas se for um novo projeto
+    LaunchedEffect(videoUri) {
+        if (isNewProject) {
+            projectsViewModel.saveProject(videoUri, template, selectedMedias)
+        }
+    }
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -244,16 +255,16 @@ fun PreviewScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Media thumbnails
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.navigationBars)
-                    .padding(start = 20.dp, end = 20.dp, bottom = 8.dp),
+                    .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                contentPadding = PaddingValues(vertical = 4.dp)
             ) {
                 itemsIndexed(selectedMedias) { index, media ->
                     Box(

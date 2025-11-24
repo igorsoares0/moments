@@ -38,7 +38,8 @@ import com.example.moments.ui.components.TemplateCard
 
 @Composable
 fun HomeScreen(
-    onTemplateClick: (Template) -> Unit = {}
+    onTemplateClick: (Template) -> Unit = {},
+    onNavigateToProjects: () -> Unit = {}
 ) {
     // Mock data for templates
     val featureTemplates = listOf(
@@ -85,7 +86,10 @@ fun HomeScreen(
     Scaffold(
         containerColor = Color(0xFF0F0F0F),
         bottomBar = {
-            BottomNavBar(selectedIndex = 0)
+            BottomNavBar(
+                selectedIndex = 0,
+                onProjectsClick = onNavigateToProjects
+            )
         }
     ) { paddingValues ->
         Column(

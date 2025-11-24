@@ -16,11 +16,12 @@ import com.example.moments.data.models.Template
 import com.example.moments.ui.screens.ChooseMediasScreen
 import com.example.moments.ui.screens.HomeScreen
 import com.example.moments.ui.screens.PreviewScreen
+import com.example.moments.ui.screens.ProjectsListScreen
 import com.example.moments.ui.screens.ViewTemplateScreen
 import com.example.moments.ui.theme.MomentsTheme
 
 enum class Screen {
-    HOME, VIEW_TEMPLATE, CHOOSE_MEDIAS, PREVIEW
+    HOME, VIEW_TEMPLATE, CHOOSE_MEDIAS, PREVIEW, PROJECTS
 }
 
 @UnstableApi
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
                 var selectedTemplate by remember { mutableStateOf<Template?>(null) }
                 var selectedMedias by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
                 var videoUri by remember { mutableStateOf<Uri?>(null) }
+                var isNewProject by remember { mutableStateOf(false) }
 
                 when (currentScreen) {
                     Screen.HOME -> {
@@ -41,6 +43,9 @@ class MainActivity : ComponentActivity() {
                             onTemplateClick = { template ->
                                 selectedTemplate = template
                                 currentScreen = Screen.VIEW_TEMPLATE
+                            },
+                            onNavigateToProjects = {
+                                currentScreen = Screen.PROJECTS
                             }
                         )
                     }
@@ -65,6 +70,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onVideoCreated = { uri ->
                                     videoUri = uri
+                                    isNewProject = true // Novo projeto criado
                                     currentScreen = Screen.PREVIEW
                                 }
                             )
@@ -78,6 +84,7 @@ class MainActivity : ComponentActivity() {
                                     videoUri = uri,
                                     template = template,
                                     selectedMedias = selectedMedias,
+                                    isNewProject = isNewProject,
                                     onClose = { currentScreen = Screen.HOME },
                                     onShare = {
                                         val intent = Intent(Intent.ACTION_SEND).apply {
@@ -90,6 +97,21 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
+                    }
+
+                    Screen.PROJECTS -> {
+                        ProjectsListScreen(
+                            onProjectClick = { project ->
+                                videoUri = project.videoUri
+                                selectedTemplate = project.template
+                                selectedMedias = project.mediaItems
+                                isNewProject = false // Projeto existente
+                                currentScreen = Screen.PREVIEW
+                            },
+                            onNavigateToHome = {
+                                currentScreen = Screen.HOME
+                            }
+                        )
                     }
                 }
             }
